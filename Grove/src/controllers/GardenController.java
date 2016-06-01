@@ -7,25 +7,44 @@ public class GardenController {
 
 	Garden garden;
 	GardenView gardenView;
-	
+	GroveAppState appState;
 
-	public static void main(String[] args) {
-		GardenController gCtrl = new GardenController();
+	public GardenController() {
+		garden = new Garden();
+		appState = GroveAppState.MAIN_MENU;
+	}
+
+	// Main Game Loop
+	public void runGame() {
 		long timeOfLastUpdate = System.nanoTime();
-		while(true) {
+		while (true) {
 			long elapsedTime = System.nanoTime() - timeOfLastUpdate;
-			gCtrl.updateGardenController(elapsedTime);
+
+			if (appState.equals(GroveAppState.MAIN_MENU)) {
+				try {
+					Thread.sleep(10);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			} else if (appState.equals(GroveAppState.IN_GAME)) {
+				updateGardenController(elapsedTime);
+			}
+			
 			timeOfLastUpdate += elapsedTime;
 		}
 	}
-	
-	public GardenController() {
-		garden = new Garden();
-		gardenView = new GardenView();	
+
+	public void startGame() {
+		appState = GroveAppState.IN_GAME;
+		gardenView.openGameScreen();
 	}
-	
+
 	public void updateGardenController(long elapsedTime) {
 		garden.updateGarden(elapsedTime);
 		gardenView.setPlantHeightLabel(garden.getPlantHeight());
+	}
+
+	public void createAndShowView() {
+		gardenView = new GardenView(this);
 	}
 }
